@@ -1,3 +1,5 @@
 Brief/
 *.csv
 .ipynb_checkpoints/
+*.png
+*.pyc
