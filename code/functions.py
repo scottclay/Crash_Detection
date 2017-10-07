@@ -71,7 +71,6 @@ def Calc_distance(dfs):
 
             a = (np.sin((lat2 - lat1)/2))**2 + (np.cos(lat1) * np.cos(lat2) * (np.sin((lon2 - lon1)/2))**2)
             c = 2 * np.arctan2(np.sqrt(a),np.sqrt(1 - a))
-            #sofar = np.sum(distance)
             d = (6371.0*c)
             distance.append(d)
             summed_distance.append(d + summed_distance[i-1])
@@ -81,30 +80,40 @@ def Calc_distance(dfs):
     return new_df
             
 
-
-def Plot_crash(i, event, raw_profile, rolling_mean, gps_dfs):
-    f, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(9,13.5))
+def Plot_crash(i, event, driver, raw_profile, rolling_mean, gps_dfs):
+    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(9,13.5))
     
+    plt.subplots_adjust(hspace = 0.5)
+    plt.suptitle(str(driver)+'\n'+str(event.index[0]))
+     
     ax1.plot(raw_profile.index,raw_profile.mag)
     ax1.plot(rolling_mean.index, rolling_mean.mag)
     ax1.plot(event.index,event.mag, marker='*',markersize=20,c='k')
     ax1.set_title("Acceleration - Full profile")
- 
+    ax1.set_xlabel("Time")
+    ax1.set_ylabel("Acceleration (units?)")
+
     ax2.plot(raw_profile.index,raw_profile.mag)
     ax2.plot(rolling_mean.index, rolling_mean.mag)
     ax2.plot(event.index,event.mag, marker='*',markersize=20,c='k')
     ax2.set_xlim([event.index - timedelta(seconds=30),event.index + timedelta(seconds=30)])
     ax2.set_title("Acceleration - -30sec to +30sec of event")
+    ax2.set_xlabel("Time")
+    ax2.set_ylabel("Acceleration (units?)")
              
     speed_df = raw_profile[['speed','lat','lon','height']].dropna(axis=0)
     ax3.plot(speed_df.index,speed_df.speed)
     ax3.plot([event.index,event.index],[speed_df.speed.min(),speed_df.speed.max()],c='k')
     ax3.set_title("Speed - Full profile")
+    ax3.set_xlabel("Time")
+    ax3.set_ylabel("Speed (units?)")
     
     ax4.plot(speed_df.index,speed_df.speed)
     ax4.plot([event.index,event.index],[speed_df.speed.min(),speed_df.speed.max()],c='k')
     ax4.set_xlim([event.index - timedelta(seconds=30),event.index + timedelta(seconds=30)])
     ax4.set_title("Speed - -30sec to +30sec of event")
+    ax4.set_xlabel("Time")
+    ax4.set_ylabel("Speed (units?)")
     
     ax4.text(event.index+timedelta(seconds=5), speed_df.speed.max()-1, event.speed_before[0])
     ax4.text(event.index+timedelta(seconds=5), speed_df.speed.max()-3, event.speed_after[0])
@@ -113,9 +122,11 @@ def Plot_crash(i, event, raw_profile, rolling_mean, gps_dfs):
     
     ax5.plot(gps_dfs.index, gps_dfs.distance)
     ax5.plot([event.index,event.index],[gps_dfs.distance.min(),gps_dfs.distance.max()],c='k')
-    ax5.set_title("Distance - Full profile")
+    ax5.set_title("Distance - -30sec to end of journey")
     ax5.set_xlim([event.index - timedelta(seconds=30),gps_dfs.index.max()])
     ax5.text(event.index+timedelta(seconds=5), gps_dfs.distance.max(), event.distance_after[0])
+    ax5.set_xlabel("Time")
+    ax5.set_ylabel("Distance (km)")
     
     #ax6.plot(gps_dfs.index, gps_dfs.distance)
     #ax6.plot([event.index,event.index],[gps_dfs.distance.min(),gps_dfs.distance.max()],c='k')
@@ -127,11 +138,20 @@ def Plot_crash(i, event, raw_profile, rolling_mean, gps_dfs):
     ax6.set_title("Bearing - -30sec to +30sec of event")
     ax6.text(event.index+timedelta(seconds=5), 250, event.bearing_before[0])
     ax6.text(event.index+timedelta(seconds=5), 230, event.bearing_after[0])
+    ax6.set_xlabel("Time")
+    ax6.set_ylabel("Bearing (degrees)")
+ 
+
+    import matplotlib.dates as mdates
+    myFmt = mdates.DateFormatter('%H:%M:%S')
+    
+    axes = fig.get_axes()
+    for ax in axes:
+        [i.set_linewidth(2.1) for i in ax.spines.values()]
+        ax.xaxis.set_major_formatter(myFmt)
+        plt.sca(ax)
+        plt.xticks(rotation=30)
+        
+
     
     pylab.savefig('../figs/'+str(event.iloc[0:1].driver[0])+'_'+str(i)+'.png', bbox_inches=0)
-    plt.close()
-    
-    
-    
-    
-    #plt.show()

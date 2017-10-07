@@ -22,7 +22,7 @@ def read_data(datapath='../data/'):
         df['mag'] = np.sqrt(df['x']**2+df['y']**2+df['z']**2)
         df['time'] = pd.to_datetime(df['timestamp'], unit='ms')
 
-    return dfs
+    return files, dfs
 
 
 def prepare_dfs(dfs,window):
@@ -43,25 +43,28 @@ def prepare_dfs(dfs,window):
     return sorted_dfs, rolling_mean, rolling_std
 
 
-def Find_events(sorted_dfs, rolling_mean, rolling_std, variable, window):
+def Find_events(files, sorted_dfs, rolling_mean, rolling_std, variable, window):
     events_df = pd.DataFrame()
     drivers = []
-    for i in range(0,25):
+    filenames = []
+    for i in range(0,len(sorted_dfs)):
         for j in range(0,len(sorted_dfs[i].index)):
             if sorted_dfs[i][variable][j] > (rolling_mean[i][variable][j]+(2.75*rolling_std[i][variable][j])):
                 if sorted_dfs[i][variable][j] > (sorted_dfs[i][variable].mean()+(5.0*sorted_dfs[i][variable].std())):
                     events_df = events_df.append(sorted_dfs[i].iloc[j])
                     drivers.append(i)
+                    filenames.append(files[i].split('/')[2])
     events_df['driver']=drivers
+    events_df['filename'] = filenames
     return events_df    
     
         
     
 def fetch_data(datapath='../data/',window='1s'):
-    dfs = read_data(datapath)
+    files, dfs = read_data(datapath)
     sorted_dfs, rolling_mean, rolling_std = prepare_dfs(dfs,window)
     
-    return dfs, sorted_dfs, rolling_mean, rolling_std
+    return files, dfs, sorted_dfs, rolling_mean, rolling_std
 
 '''    
 def calc_distance(dfs):
