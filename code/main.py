@@ -12,31 +12,27 @@ from functions import gather_info
 from functions import plot_crash
 from functions import calc_distance
 
-
 # Free parameters
+sigma = 2.75
+time_window = '1s'
+test_variable = 'mag'
 
-#Relative path to data
+# Relative path to data
 dir = os.path.dirname(__file__)
 datapath = os.path.join(dir, '../data/')
 output_path = os.path.join(dir, '../output/')
 
-
-files, dfs, sorted_dfs, rolling_mean, rolling_std = fetch_data(datapath,'1s')
-                    
-    
+# Read data/Find events
+files, dfs, sorted_dfs, rolling_mean, rolling_std = fetch_data(datapath,time_window)    
 new_dfs = calc_distance(dfs)
-sorted_dfs, rolling_mean, rolling_std = prepare_dfs(dfs,'1s')
+sorted_dfs, rolling_mean, rolling_std = prepare_dfs(dfs,time_window)
 gps_dfs = calc_distance(sorted_dfs)
-#event = Find_events(dfs,'mag','1s')
-event = find_events(files, sorted_dfs, rolling_mean, rolling_std,'mag','1s')
+event = find_events(sigma, files, sorted_dfs, rolling_mean, rolling_std,test_variable,time_window)
 event = gather_info(event, sorted_dfs, gps_dfs, 30)
 
-
-
+# Cut the data based on a selection criteria to find crash events
 event_cut = event[(event.speed_before>event.speed_after) & (event.distance_after<10) & ((event.bearing_after - event.bearing_before)>100)]
-
 event_cut = event_cut.drop_duplicates(subset=['driver'],keep='first')
-
 
 #Produce outputs - plots for each event, and then text output
 print("File name \t Time of event \n")
