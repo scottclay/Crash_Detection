@@ -6,7 +6,7 @@ import numpy as np
 from datetime import datetime, timedelta
 import pylab
 
-def find_events(sigma=2.75, files, sorted_dfs, rolling_mean, rolling_std, variable, window):
+def find_events(files, sorted_dfs, rolling_mean, rolling_std, variable, window, sigma=2.75):
 #function looks for anomalies in the data as raw events more than sigma standard deviations
 #away from the rolling mean
 #and returns these events as a new dataframe

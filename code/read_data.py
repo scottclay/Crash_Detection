@@ -18,7 +18,10 @@ def read_data(datapath):
         df.columns = df.columns.str.strip() #removes any white space from column headers
         df['mag'] = np.sqrt(df['x']**2+df['y']**2+df['z']**2)
         df['time'] = pd.to_datetime(df['timestamp'], unit='ms')
-
+        
+        #check units on acceleration, if mean >5 then need to convert to g
+        if df['mag'].mean() > 5.0 :
+        	df['mag'] = df['mag']/9.81 
     return files, dfs
 
 
