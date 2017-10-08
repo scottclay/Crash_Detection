@@ -18,7 +18,7 @@ def find_events(files, sorted_dfs, rolling_mean, rolling_std, variable, window):
                 if sorted_dfs[i][variable][j] > (sorted_dfs[i][variable].mean()+(5.0*sorted_dfs[i][variable].std())):
                     events_df = events_df.append(sorted_dfs[i].iloc[j])
                     drivers.append(i)
-                    filenames.append(files[i].split('/')[2])
+                    filenames.append(files[i].split('/')[-1])
     events_df['driver']=drivers
     events_df['filename'] = filenames
     return events_df    
@@ -95,7 +95,7 @@ def calc_distance(dfs):
     return new_df
             
 
-def plot_crash(i, event, driver, raw_profile, rolling_mean, gps_dfs):
+def plot_crash(output_path, i, event, driver, raw_profile, rolling_mean, gps_dfs):
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(9,13.5))
     
     plt.subplots_adjust(hspace = 0.5)
@@ -106,7 +106,7 @@ def plot_crash(i, event, driver, raw_profile, rolling_mean, gps_dfs):
     ax1.plot(event.index,event.mag, marker='*',markersize=20,c='k')
     ax1.set_title("Acceleration - Full profile")
     ax1.set_xlabel("Time")
-    ax1.set_ylabel("Acceleration (units?)")
+    ax1.set_ylabel("Acceleration (g)")
 
     ax2.plot(raw_profile.index,raw_profile.mag)
     ax2.plot(rolling_mean.index, rolling_mean.mag)
@@ -114,7 +114,7 @@ def plot_crash(i, event, driver, raw_profile, rolling_mean, gps_dfs):
     ax2.set_xlim([event.index - timedelta(seconds=30),event.index + timedelta(seconds=30)])
     ax2.set_title("Acceleration - -30sec to +30sec of event")
     ax2.set_xlabel("Time")
-    ax2.set_ylabel("Acceleration (units?)")
+    ax2.set_ylabel("Acceleration (g)")
              
     speed_df = raw_profile[['speed','lat','lon','height']].dropna(axis=0)
     ax3.plot(speed_df.index,speed_df.speed)
@@ -169,4 +169,4 @@ def plot_crash(i, event, driver, raw_profile, rolling_mean, gps_dfs):
         
 
     
-    pylab.savefig('../figs/'+str(event.iloc[0:1].driver[0])+'_'+str(i)+'.png', bbox_inches=0)
+    pylab.savefig(output_path+'/figs/'+str(event.iloc[0:1].driver[0])+str(driver)+'.png', bbox_inches=0)
