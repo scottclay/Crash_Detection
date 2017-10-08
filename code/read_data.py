@@ -40,24 +40,7 @@ def prepare_dfs(dfs,window):
         rolling_mean.append(_mean)
         rolling_std.append(_std)
     
-    return sorted_dfs, rolling_mean, rolling_std
-
-
-def Find_events(files, sorted_dfs, rolling_mean, rolling_std, variable, window):
-    events_df = pd.DataFrame()
-    drivers = []
-    filenames = []
-    for i in range(0,len(sorted_dfs)):
-        for j in range(0,len(sorted_dfs[i].index)):
-            if sorted_dfs[i][variable][j] > (rolling_mean[i][variable][j]+(2.75*rolling_std[i][variable][j])):
-                if sorted_dfs[i][variable][j] > (sorted_dfs[i][variable].mean()+(5.0*sorted_dfs[i][variable].std())):
-                    events_df = events_df.append(sorted_dfs[i].iloc[j])
-                    drivers.append(i)
-                    filenames.append(files[i].split('/')[2])
-    events_df['driver']=drivers
-    events_df['filename'] = filenames
-    return events_df    
-    
+    return sorted_dfs, rolling_mean, rolling_std    
         
     
 def fetch_data(datapath='../data/',window='1s'):
@@ -66,26 +49,3 @@ def fetch_data(datapath='../data/',window='1s'):
     
     return files, dfs, sorted_dfs, rolling_mean, rolling_std
 
-'''    
-def calc_distance(dfs):
-    
-    distance = []
-    distance.append(0)
-    for i in range(1,len(test.index)):
-        lat1 = test.lat.iloc[i-1]
-        lat2 = test.lat.iloc[i]
-        lon1 = test.lon.iloc[i-1]
-        lon2 = test.lon.iloc[i]
-    
-    
-        a = (np.sin((lat2 - lat1)/2))**2 + (np.cos(lat1) * np.cos(lat2) * (np.sin((lon2 - lon1)/2))**2)
-        c = 2 * np.arctan2(np.sqrt(a),np.sqrt(1 - a))
-        sofar = np.sum(distance)
-        d = (6371.0*c)
-        #distance.append((6371.0 * c))
-        distance.append(d)
-        #print(lat1,lat2,lon1,lon2)
-        print (sofar,d)
-    
-    #print(i,d)
-'''

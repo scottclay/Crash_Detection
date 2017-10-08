@@ -8,7 +8,22 @@ import numpy as np
 from datetime import datetime, timedelta
 import pylab
     
-def Gather_info(event, dfs, gps, time):
+def find_events(files, sorted_dfs, rolling_mean, rolling_std, variable, window):
+    events_df = pd.DataFrame()
+    drivers = []
+    filenames = []
+    for i in range(0,len(sorted_dfs)):
+        for j in range(0,len(sorted_dfs[i].index)):
+            if sorted_dfs[i][variable][j] > (rolling_mean[i][variable][j]+(2.75*rolling_std[i][variable][j])):
+                if sorted_dfs[i][variable][j] > (sorted_dfs[i][variable].mean()+(5.0*sorted_dfs[i][variable].std())):
+                    events_df = events_df.append(sorted_dfs[i].iloc[j])
+                    drivers.append(i)
+                    filenames.append(files[i].split('/')[2])
+    events_df['driver']=drivers
+    events_df['filename'] = filenames
+    return events_df    
+
+def gather_info(event, dfs, gps, time):
     
     speed_mean_before=[]
     speed_mean_after =[]
@@ -55,7 +70,7 @@ def Gather_info(event, dfs, gps, time):
     return event
     
     
-def Calc_distance(dfs):
+def calc_distance(dfs):
     new_df = []
     for df in dfs:
         _df = df[['lat','lon','bearing']].dropna(axis=0)
@@ -80,7 +95,7 @@ def Calc_distance(dfs):
     return new_df
             
 
-def Plot_crash(i, event, driver, raw_profile, rolling_mean, gps_dfs):
+def plot_crash(i, event, driver, raw_profile, rolling_mean, gps_dfs):
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(9,13.5))
     
     plt.subplots_adjust(hspace = 0.5)
