@@ -36,7 +36,11 @@ event = gather_info(event, sorted_dfs, gps_dfs, 30)
 print("Cutting the selection")
 event_cut = event[(event.speed_before>event.speed_after) & (event.distance_after<10) & ((event.bearing_after - event.bearing_before)>100)]
 event_cut = event_cut.drop_duplicates(subset=['driver'],keep='first') #only keep first event for each journey 
-print("Number of potential crash events:", len(event_cut.index))
+
+if len(event_cut.index) == 0:
+    print("0 potential crashes! Try reducing the value of sigma")
+else:
+    print("Number of potential crash events:", len(event_cut.index))
 
 #Produce outputs - plots for each event, and then text output
 text_file = open(output_path+"output.txt", "w")
