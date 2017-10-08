@@ -10,15 +10,10 @@ from datetime import datetime, timedelta
 def read_data(datapath='../data/'):
 
     files = glob.glob(datapath+'*.csv')
-
     dfs = [pd.read_csv(f) for f in files]
     
-    
-    dfs[1] = dfs[1].rename(columns={" timestamp ": "timestamp"})
-
-
-
     for df in dfs:
+        df.columns = df.columns.str.strip()
         df['mag'] = np.sqrt(df['x']**2+df['y']**2+df['z']**2)
         df['time'] = pd.to_datetime(df['timestamp'], unit='ms')
 
