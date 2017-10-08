@@ -53,7 +53,7 @@ def fetch_data(datapath,window='1s'):
     sorted_dfs, rolling_mean, rolling_std = prepare_dfs(dfs,window)
     
     if len(files)==0:
-    	print("No files found in /data/")
+    	exit("No files found in /data/")
     
     return files, dfs, sorted_dfs, rolling_mean, rolling_std
 
