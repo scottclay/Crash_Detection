@@ -2,6 +2,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 # My functions 
 from read_data import fetch_data
@@ -13,7 +14,10 @@ from functions import calc_distance
 
 
 # Free parameters
-datapath = '../data/'
+
+#Relative path to data
+dir = os.path.dirname(__file__)
+datapath = os.path.join(dir, '../data/')
 
 
 files, dfs, sorted_dfs, rolling_mean, rolling_std = fetch_data(datapath,'1s')
