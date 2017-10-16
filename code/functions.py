@@ -85,10 +85,10 @@ def calc_distance(dfs):
         summed_distance = []
         summed_distance.append(0.)
         for i in range(1,len(_df.index)):
-            lat1 = _df.lat.iloc[i-1]
-            lat2 = _df.lat.iloc[i]
-            lon1 = _df.lon.iloc[i-1]
-            lon2 = _df.lon.iloc[i]
+            lat1 = np.radians(_df.lat.iloc[i-1])
+            lat2 = np.radians(_df.lat.iloc[i])
+            lon1 = np.radians(_df.lon.iloc[i-1])
+            lon2 = np.radians(_df.lon.iloc[i])
             
             #we use the Haversine formula expressed as a two-argument inverge tangent
             #function to calculate the short distance between two points on a sphere

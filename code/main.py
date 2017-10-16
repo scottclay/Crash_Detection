@@ -34,7 +34,7 @@ event = gather_info(event, sorted_dfs, gps_dfs, 30)
 
 # Cut the data based on a selection criteria to find crash events
 print("Cutting the selection")
-event_cut = event[(event.speed_before>event.speed_after) & (event.distance_after<10) & ((event.bearing_after - event.bearing_before)>100)]
+event_cut = event[(event.speed_before>event.speed_after) & (event.distance_after<0.2) & ((event.bearing_after - event.bearing_before)>100.)]
 event_cut = event_cut.drop_duplicates(subset=['driver'],keep='first') #only keep first event for each journey 
 
 if len(event_cut.index) == 0:
